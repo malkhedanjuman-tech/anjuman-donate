@@ -40,8 +40,7 @@ form.addEventListener("submit", async (e) => {
         const upi = "makbarali.005@oksbi";
         const payee = "Anjuman";
 
-        const note =
-            `${campaign} | Ref:${donationRef}`;
+        const note = "";
 
         const upiLink =
 `upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(payee)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
