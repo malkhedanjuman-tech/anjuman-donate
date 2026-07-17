@@ -56,7 +56,7 @@ console.log(upiLink);
 
 alert(upiLink);
 
-// window.open(upiLink, "_blank");
+window.open(upiLink, "_blank");
 
     }
     catch(err){
