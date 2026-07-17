@@ -42,10 +42,21 @@ form.addEventListener("submit", async (e) => {
 
         const note = "";
 
-        const upiLink =
-`upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(payee)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+        const params = new URLSearchParams({
+    pa: upi,
+    pn: payee,
+    am: amount,
+    cu: "INR",
+    tn: note
+});
 
-        window.location.href = upiLink;
+const upiLink = `upi://pay?${params.toString()}`;
+
+console.log(upiLink);
+
+alert(upiLink);
+
+// window.location.href = upiLink;
 
     }
     catch(err){
