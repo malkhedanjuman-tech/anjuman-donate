@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donation Admin Pro</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header class="header">
+    <h1>Donation Admin Pro</h1>
+    <div class="header-actions">
+        <button id="refreshBtn">Refresh</button>
+        <button id="exportCSV">CSV</button>
+        <button id="exportExcel">Excel</button>
+        <button id="printBtn">Print</button>
+    </div>
+</header>
+
+<section class="dashboard">
+
+<div class="card"><h3>Total Donations</h3><span id="totalDonations">0</span></div>
+<div class="card"><h3>Total Amount</h3><span id="totalAmount">₹0</span></div>
+<div class="card"><h3>Pending</h3><span id="pendingCount">0</span></div>
+<div class="card"><h3>Verified</h3><span id="verifiedCount">0</span></div>
+<div class="card"><h3>Initiated</h3><span id="initiatedCount">0</span></div>
+<div class="card"><h3>Submitted</h3><span id="submittedCount">0</span></div>
+<div class="card"><h3>Today's Collection</h3><span id="todayCollection">₹0</span></div>
+<div class="card"><h3>Monthly Collection</h3><span id="monthCollection">₹0</span></div>
+
+</section>
+
+<section class="toolbar">
+<input id="searchBox" placeholder="Search...">
+<input id="campaignFilter" placeholder="Campaign">
+<select id="statusFilter">
+<option value="">All Status</option>
+<option>Initiated</option>
+<option>Payment Submitted</option>
+<option>Verified</option>
+<option>Rejected</option>
+</select>
+
+<label><input type="checkbox" id="todayOnly">Today</label>
+<label><input type="checkbox" id="pendingOnly">Pending</label>
+
+<input type="date" id="fromDate">
+<input type="date" id="toDate">
+
+<select id="rowsPerPage">
+<option>25</option>
+<option>50</option>
+<option>100</option>
+</select>
+</section>
+
+<section class="bulk-bar">
+<label><input type="checkbox" id="selectAll"> Select All</label>
+<button id="verifySelected">Verify</button>
+<button id="deleteSelected">Delete</button>
+<button id="changeStatus">Change Status</button>
+<button id="changeCampaign">Change Campaign</button>
+</section>
+
+<section class="charts">
+<canvas id="dailyChart"></canvas>
+<canvas id="campaignChart"></canvas>
+</section>
+
+<section class="table-wrapper">
+<table id="donationTable">
+<thead>
+<tr>
+<th></th>
+<th>#</th>
+<th>Reference</th>
+<th>Name</th>
+<th>Mobile</th>
+<th>Amount</th>
+<th>Campaign</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</section>
+
+<div class="pagination">
+<button id="prevPage">Previous</button>
+<span id="pageInfo">Page 1</span>
+<button id="nextPage">Next</button>
+</div>
+
+<div id="drawer" class="drawer">
+<div class="drawer-header">
+<h2>Donation Details</h2>
+<button id="closeDrawer">✕</button>
+</div>
+<div id="drawerContent"></div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay">
+Loading...
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module" src="admin.js"></script>
+
+</body>
+</html>
