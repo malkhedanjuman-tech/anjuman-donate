@@ -37,29 +37,29 @@ form.addEventListener("submit", async (e) => {
 
         });
 
-        const upi = "8099813634";
+        // Restore original UPI ID
+        const upi = "makbarali.005@oksbi";
         const payee = "Anjuman";
 
         const note = `${campaign} | Ref:${donationRef}`;
 
         const params = new URLSearchParams({
-    pa: upi,
-    pn: payee,
-    am: amount,
-    cu: "INR",
-    tn: note
-});
+            pa: upi,
+            pn: payee,
+            am: amount,
+            cu: "INR",
+            tn: note
+        });
 
-const upiLink = `upi://pay?${params.toString()}`;
+        const upiLink = `upi://pay?${params.toString()}`;
 
-console.log(upiLink);
+        console.log(upiLink);
+        alert(upiLink);
 
-alert(upiLink);
-
-window.open(upiLink, "_blank");
+        window.open(upiLink, "_blank");
 
     }
-    catch(err){
+    catch (err) {
 
         console.error(err);
 
