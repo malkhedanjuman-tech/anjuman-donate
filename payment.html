@@ -161,10 +161,8 @@ document.getElementById("campaign").textContent = campaign || "-";
 document.getElementById("mobile").textContent = MOBILE_NUMBER;
 document.getElementById("upiId").textContent = UPI_ID;
 
-const note = `${campaign || "Donation"} | Ref:${ref}`;
-
 const upi =
-`upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note)}`;
+`upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR`;
 
 document.getElementById("qr").src =
 "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
