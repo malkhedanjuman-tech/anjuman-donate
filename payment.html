@@ -4,114 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Complete Payment</title>
-
 <style>
-body{
-    font-family:Arial,sans-serif;
-    background:#f4f4f4;
-    margin:0;
-    padding:20px;
-}
-
-.card{
-    max-width:520px;
-    margin:auto;
-    background:#fff;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
-}
-
-h2{
-    text-align:center;
-}
-
-.row{
-    margin:16px 0;
-}
-
-.label{
-    color:#666;
-    font-size:13px;
-}
-
-.value{
-    font-weight:bold;
-    font-size:18px;
-    margin-top:4px;
-    word-break:break-word;
-}
-
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
-    margin-top:8px;
-    cursor:pointer;
-    font-size:15px;
-}
-
-button:disabled{
-    opacity:.7;
-    cursor:not-allowed;
-}
-
-.primary{
-    background:#0b57d0;
-    color:#fff;
-}
-
-.success{
-    background:#198754;
-    color:#fff;
-}
-
-img{
-    display:block;
-    margin:20px auto;
-    width:220px;
-    max-width:100%;
-}
-
-#message{
-    text-align:center;
-    color:#198754;
-    font-weight:bold;
-    margin-top:15px;
-}
+body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px}
+.card{max-width:520px;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+h2{text-align:center}.row{margin:16px 0}.label{color:#666;font-size:13px}
+.value{font-weight:bold;font-size:20px;margin-top:4px;word-break:break-word}
+button{width:100%;padding:12px;border:none;border-radius:8px;margin-top:8px;cursor:pointer;font-size:15px}
+button:disabled{opacity:.7;cursor:not-allowed}.primary{background:#0b57d0;color:#fff}.success{background:#198754;color:#fff}
+img{display:block;margin:20px auto;width:220px;max-width:100%}
+#message{text-align:center;color:#198754;font-weight:bold;margin-top:15px}
+#thankYou{display:none;text-align:center}
 </style>
-
 </head>
 <body>
 
-<div class="card">
-
+<div class="card" id="paymentCard">
 <h2>Complete Your Donation</h2>
 
 <div class="row">
-<div class="label">Reference</div>
-<div class="value" id="ref"></div>
-</div>
-
-<div class="row">
-<div class="label">Amount</div>
-<div class="value" id="amount"></div>
-</div>
-
-<div class="row">
-<div class="label">Campaign</div>
-<div class="value" id="campaign"></div>
-</div>
-
-<button class="primary" id="upiBtn">
-Open UPI App
-</button>
-
-<img id="qr" alt="UPI QR Code">
-
-<div class="row">
-<div class="label">Mobile</div>
+<div class="label">Mobile Number (Preferred)</div>
 <div class="value" id="mobile"></div>
 <button onclick="copyText(MOBILE_NUMBER)">Copy Mobile Number</button>
 </div>
@@ -122,99 +33,59 @@ Open UPI App
 <button onclick="copyText(UPI_ID)">Copy UPI ID</button>
 </div>
 
-<button class="success" id="doneBtn">
-I Have Completed Payment
-</button>
+<div class="row"><div class="label">Reference</div><div class="value" id="ref"></div></div>
+<div class="row"><div class="label">Amount</div><div class="value" id="amount"></div></div>
+<div class="row"><div class="label">Campaign</div><div class="value" id="campaign"></div></div>
 
+<button class="primary" id="upiBtn">Open UPI App</button>
+
+<p style="text-align:center;color:#666;font-size:14px">Use QR only if you have another device.</p>
+<img id="qr" alt="UPI QR Code">
+
+<button class="success" id="doneBtn">I Have Completed Payment</button>
 <div id="message"></div>
+</div>
 
+<div class="card" id="thankYou">
+<h2>✅ Thank You</h2>
+<p>Your payment has been submitted.</p>
+<p><strong>Donation Reference</strong></p>
+<h3 id="savedRef"></h3>
+<button class="primary" onclick="location.href='index.html'">Back to Home</button>
 </div>
 
 <script type="module">
-
 import { db, doc, updateDoc } from "./firebase.js";
-
-/* ====== CHANGE ONLY THESE IF REQUIRED ====== */
-
-const UPI_ID = "makbarali.005@oksbi";
-const MOBILE_NUMBER = "8099813634";
-const PAYEE_NAME = "Anjuman";
-
-/* ========================================== */
-
-const q = new URLSearchParams(location.search);
-
-const id = q.get("id");
-const ref = q.get("ref");
-const amount = q.get("amount");
-const campaign = q.get("campaign");
-
-if(!id || !ref || !amount){
-    alert("Invalid donation link.");
-    location.href = "index.html";
-    throw new Error("Invalid URL");
-}
-
-document.getElementById("ref").textContent = ref;
-document.getElementById("amount").textContent = "₹ " + amount;
-document.getElementById("campaign").textContent = campaign || "-";
-document.getElementById("mobile").textContent = MOBILE_NUMBER;
-document.getElementById("upiId").textContent = UPI_ID;
-
-const upi =
-`upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR`;
-
-document.getElementById("qr").src =
-"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" +
-encodeURIComponent(upi);
-
-document.getElementById("upiBtn").onclick = () => {
-    location.href = upi;
+const UPI_ID="makbarali.005@oksbi";
+const MOBILE_NUMBER="8099813634";
+const PAYEE_NAME="Anjuman";
+const q=new URLSearchParams(location.search);
+const id=q.get("id"),ref=q.get("ref"),amount=q.get("amount"),campaign=q.get("campaign");
+if(!id||!ref||!amount){alert("Invalid donation link.");location.href="index.html";throw new Error("Invalid URL");}
+document.getElementById("ref").textContent=ref;
+document.getElementById("amount").textContent="₹ "+amount;
+document.getElementById("campaign").textContent=campaign||"-";
+document.getElementById("mobile").textContent=MOBILE_NUMBER;
+document.getElementById("upiId").textContent=UPI_ID;
+document.getElementById("savedRef").textContent=ref;
+const upi=`upi://pay?pa=${UPI_ID}&pn=${encodeURIComponent(PAYEE_NAME)}&am=${amount}&cu=INR`;
+document.getElementById("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data="+encodeURIComponent(upi);
+document.getElementById("upiBtn").onclick=()=>{location.href=upi;};
+window.copyText=async(t)=>{try{await navigator.clipboard.writeText(t);alert("Copied");}catch{alert("Unable to copy.");}};
+document.getElementById("doneBtn").onclick=async()=>{
+ const btn=document.getElementById("doneBtn");
+ btn.disabled=true;btn.textContent="Submitting...";
+ try{
+  await updateDoc(doc(db,"donations",id),{status:"Payment Submitted"});
+  document.getElementById("paymentCard").style.display="none";
+  document.getElementById("thankYou").style.display="block";
+ }catch(e){
+  console.error(e);
+  btn.disabled=false;
+  btn.textContent="I Have Completed Payment";
+  alert("Unable to update payment status.");
+ }
 };
-
-window.copyText = async(text)=>{
-    try{
-        await navigator.clipboard.writeText(text);
-        alert("Copied");
-    }catch{
-        alert("Unable to copy.");
-    }
-};
-
-document.getElementById("doneBtn").onclick = async()=>{
-
-    const btn = document.getElementById("doneBtn");
-
-    btn.disabled = true;
-    btn.textContent = "Submitting...";
-
-    try{
-
-        await updateDoc(doc(db,"donations",id),{
-            status:"Payment Submitted"
-        });
-
-        document.getElementById("message").textContent =
-        "✔ Payment submitted successfully. Redirecting...";
-
-        setTimeout(()=>{
-            location.href="index.html";
-        },2000);
-
-    }catch(e){
-
-        console.error(e);
-
-        btn.disabled = false;
-        btn.textContent = "I Have Completed Payment";
-
-        alert("Unable to update payment status.");
-
-    }
-
-};
-
 </script>
-
 </body>
 </html>
