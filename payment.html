@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Donation</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,sans-serif;
+        }
+
+        body{
+            background:#f5f5f5;
+            padding:20px;
+        }
+
+        .card{
+            max-width:500px;
+            margin:auto;
+            background:#fff;
+            padding:25px;
+            border-radius:12px;
+            box-shadow:0 5px 15px rgba(0,0,0,.1);
+        }
+
+        h2{
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        .success{
+            color:green;
+            text-align:center;
+            font-weight:bold;
+            margin-bottom:20px;
+        }
+
+        .row{
+            margin-bottom:15px;
+        }
+
+        .label{
+            font-size:14px;
+            color:#666;
+        }
+
+        .value{
+            font-size:18px;
+            font-weight:bold;
+            margin-top:4px;
+            word-break:break-word;
+        }
+
+        .copyBtn{
+            width:100%;
+            margin-top:8px;
+            padding:10px;
+            border:none;
+            background:#0066cc;
+            color:#fff;
+            border-radius:6px;
+            cursor:pointer;
+        }
+
+        .qr{
+            text-align:center;
+            margin:25px 0;
+        }
+
+        .qr img{
+            width:220px;
+            max-width:100%;
+        }
+
+        .finishBtn{
+            width:100%;
+            padding:12px;
+            background:green;
+            color:white;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+
+    <h2>Donation Successful</h2>
+
+    <p class="success">
+        Your donation request has been registered.
+    </p>
+
+    <div class="row">
+        <div class="label">Donation Reference</div>
+        <div class="value" id="ref"></div>
+    </div>
+
+    <div class="row">
+        <div class="label">Amount</div>
+        <div class="value" id="amount"></div>
+    </div>
+
+    <div class="row">
+        <div class="label">Campaign</div>
+        <div class="value" id="campaign"></div>
+    </div>
+
+    <div class="row">
+        <div class="label">Registered Mobile Number</div>
+        <div class="value" id="mobile">8099813634</div>
+
+        <button class="copyBtn" onclick="copyMobile()">
+            Copy Mobile Number
+        </button>
+    </div>
+
+    <div class="row">
+        <div class="label">UPI ID</div>
+        <div class="value" id="upi">
+            makbarali.005@oksbi
+        </div>
+
+        <button class="copyBtn" onclick="copyUPI()">
+            Copy UPI ID
+        </button>
+    </div>
+
+    <div class="qr">
+
+        <img
+            id="qrImage"
+            src=""
+            alt="QR Code">
+
+    </div>
+
+    <button class="finishBtn">
+        I Have Completed Payment
+    </button>
+
+</div>
+
+<script>
+
+const params=new URLSearchParams(window.location.search);
+
+const ref=params.get("ref");
+const amount=params.get("amount");
+const campaign=params.get("campaign");
+
+document.getElementById("ref").textContent=ref;
+document.getElementById("amount").textContent="₹ "+amount;
+document.getElementById("campaign").textContent=campaign;
+
+const upiString=`upi://pay?pa=makbarali.005@oksbi&pn=Anjuman&am=${amount}&cu=INR&tn=${campaign}|Ref:${ref}`;
+
+document.getElementById("qrImage").src=
+`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+
+function copyMobile(){
+
+navigator.clipboard.writeText("8099813634");
+
+alert("Mobile number copied.");
+
+}
+
+function copyUPI(){
+
+navigator.clipboard.writeText("makbarali.005@oksbi");
+
+alert("UPI ID copied.");
+
+}
+
+</script>
+
+</body>
+</html>
