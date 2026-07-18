@@ -16,33 +16,31 @@ form.addEventListener("submit", async (e) => {
     const amount = document.getElementById("amount").value.trim();
     const campaign = document.getElementById("campaign").value;
 
-    // Donation Reference
+    // Generate Donation Reference
     const donationRef =
         "MDA-" +
         Math.random().toString(36).substring(2, 8).toUpperCase();
 
     try {
 
+        // Save donation to Firestore
         await addDoc(collection(db, "donations"), {
-
             donationRef,
             name,
             mobile,
             amount: Number(amount),
             campaign,
-
             status: "Initiated",
-
             createdAt: serverTimestamp()
-
         });
 
-        // Restore original UPI ID
+        // UPI Details
         const upi = "makbarali.005@oksbi";
         const payee = "Anjuman";
 
         const note = `${campaign} | Ref:${donationRef}`;
 
+        // Generate UPI URI
         const params = new URLSearchParams({
             pa: upi,
             pn: payee,
@@ -53,16 +51,15 @@ form.addEventListener("submit", async (e) => {
 
         const upiLink = `upi://pay?${params.toString()}`;
 
-        console.log(upiLink);
-        alert(upiLink);
+        // Debugging
+        console.log("UPI Link:", upiLink);
 
-        window.open(upiLink, "_blank");
+        // Launch UPI App
+        window.location.href = upiLink;
 
-    }
-    catch (err) {
+    } catch (err) {
 
         console.error(err);
-
         alert("Unable to save donation. Please try again.");
 
     }
