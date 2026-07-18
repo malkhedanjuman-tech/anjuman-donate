@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px}
+.container{max-width:1200px;margin:auto}
+h2{text-align:center}
+input{width:100%;padding:10px;margin:15px 0;border:1px solid #ccc;border-radius:8px}
+table{width:100%;border-collapse:collapse;background:#fff}
+th,td{padding:10px;border:1px solid #ddd;text-align:left;font-size:14px}
+th{background:#0b57d0;color:#fff}
+.badge{padding:4px 8px;border-radius:20px;color:#fff;font-size:12px}
+.initiated{background:#f0ad4e}
+.submitted{background:#198754}
+.verified{background:#0d6efd}
+button{padding:6px 10px;border:none;border-radius:6px;background:#198754;color:#fff;cursor:pointer}
+button:disabled{opacity:.6}
+@media(max-width:900px){table{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Anjuman Donation Admin</h2>
+<input id="search" placeholder="Search by Reference, Name or Mobile">
+<table>
+<thead>
+<tr>
+<th>Reference</th>
+<th>Name</th>
+<th>Mobile</th>
+<th>Amount</th>
+<th>Campaign</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<script type="module">
+import {db,collection,getDocs,query,orderBy,doc,updateDoc} from "./firebase.js";
+
+const tbody=document.getElementById("tbody");
+let data=[];
+
+function badge(status){
+ if(status==="Verified") return '<span class="badge verified">Verified</span>';
+ if(status==="Payment Submitted") return '<span class="badge submitted">Payment Submitted</span>';
+ return '<span class="badge initiated">Initiated</span>';
+}
+
+function fmt(ts){
+ if(!ts||!ts.seconds) return "-";
+ return new Date(ts.seconds*1000).toLocaleString();
+}
+
+function render(rows){
+ tbody.innerHTML="";
+ rows.forEach(d=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+  <td>${d.donationRef||""}</td>
+  <td>${d.name||""}</td>
+  <td>${d.mobile||""}</td>
+  <td>₹ ${d.amount||0}</td>
+  <td>${d.campaign||""}</td>
+  <td>${badge(d.status)}</td>
+  <td>${fmt(d.createdAt)}</td>
+  <td>${d.status==="Verified"?"Verified":`<button data-id="${d.id}">Verify</button>`}</td>`;
+  tbody.appendChild(tr);
+ });
+ document.querySelectorAll("button[data-id]").forEach(b=>{
+   b.onclick=async()=>{
+      b.disabled=true;
+      await updateDoc(doc(db,"donations",b.dataset.id),{status:"Verified"});
+      load();
+   };
+ });
+}
+
+async function load(){
+ const snap=await getDocs(query(collection(db,"donations"),orderBy("createdAt","desc")));
+ data=snap.docs.map(x=>({id:x.id,...x.data()}));
+ render(data);
+}
+
+document.getElementById("search").addEventListener("input",e=>{
+ const t=e.target.value.toLowerCase();
+ render(data.filter(x=>
+  (x.donationRef||"").toLowerCase().includes(t)||
+  (x.name||"").toLowerCase().includes(t)||
+  (x.mobile||"").toLowerCase().includes(t)
+ ));
+});
+
+load();
+</script>
+</body>
+</html>
