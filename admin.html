@@ -5,103 +5,318 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Donation Admin Pro</title>
 <style>
-body{font-family:Arial;margin:0;background:#f2f4f8}
-.top{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:15px}
-.card{background:#fff;padding:12px;border-radius:8px;box-shadow:0 1px 4px #0002}
-.toolbar,.bulk{display:flex;gap:8px;flex-wrap:wrap;padding:10px}
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{border:1px solid #ddd;padding:8px;font-size:13px}
-th{cursor:pointer;background:#0b57d0;color:#fff}
-#details{position:fixed;right:0;top:0;width:360px;height:100%;background:#fff;box-shadow:-2px 0 8px #0003;padding:15px;overflow:auto;display:none}
-.toast{position:fixed;bottom:15px;right:15px;background:#222;color:#fff;padding:10px;border-radius:6px;display:none}
-</style>
-</head>
 <body>
-<div class="top">
-<div class="card"><b>Total Donations</b><div id=tDon>0</div></div>
-<div class="card"><b>Total Amount</b><div id=tAmt>₹0</div></div>
-<div class="card"><b>Pending</b><div id=tPend>0</div></div>
-<div class="card"><b>Verified</b><div id=tVer>0</div></div>
-<div class="card"><b>Today's</b><div id=tToday>₹0</div></div>
-<div class="card"><b>This Month</b><div id=tMonth>₹0</div></div>
-<div class="card"><b>Last Refresh</b><div id=last>-</div></div>
-<div class="card"><button id=refresh>Refresh</button></div>
+
+<div class="app">
+
+    <!-- ================= HEADER ================= -->
+
+    <header class="topbar">
+
+        <div class="logo">
+
+            <h2>Donation Admin</h2>
+
+            <small>Enterprise Dashboard</small>
+
+        </div>
+
+        <div class="top-actions">
+
+            <button id="refreshBtn">
+                🔄 Refresh
+            </button>
+
+            <button id="exportCSV">
+                CSV
+            </button>
+
+            <button id="exportExcel">
+                Excel
+            </button>
+
+            <button id="printBtn">
+                Print
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- ================= KPI ================= -->
+
+    <section class="cards">
+
+        <div class="card">
+            <span>Total Donations</span>
+            <h2 id="totalDonations">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Total Amount</span>
+            <h2 id="totalAmount">₹0</h2>
+        </div>
+
+        <div class="card">
+            <span>Pending</span>
+            <h2 id="pendingCount">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Verified</span>
+            <h2 id="verifiedCount">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Initiated</span>
+            <h2 id="initiatedCount">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Payment Submitted</span>
+            <h2 id="submittedCount">0</h2>
+        </div>
+
+        <div class="card">
+            <span>Today's Collection</span>
+            <h2 id="todayCollection">₹0</h2>
+        </div>
+
+        <div class="card">
+            <span>This Month</span>
+            <h2 id="monthCollection">₹0</h2>
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= FILTERS ================= -->
+
+    <section class="filters">
+
+        <input
+            id="searchBox"
+            placeholder="Search Name / Mobile / Ref ID">
+
+        <input
+            id="campaignFilter"
+            placeholder="Campaign">
+
+        <select id="statusFilter">
+
+            <option value="">All Status</option>
+
+            <option>Initiated</option>
+
+            <option>Payment Submitted</option>
+
+            <option>Verified</option>
+
+        </select>
+
+        <input type="date" id="fromDate">
+
+        <input type="date" id="toDate">
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="todayOnly">
+
+            Today's Donations
+
+        </label>
+
+        <label>
+
+            <input
+                type="checkbox"
+                id="pendingOnly">
+
+            Pending Only
+
+        </label>
+
+    </section>
+
+
+
+    <!-- ================= BULK ACTIONS ================= -->
+
+    <section class="bulkbar">
+
+        <button id="verifySelected">
+
+            Verify Selected
+
+        </button>
+
+        <button id="changeCampaign">
+
+            Change Campaign
+
+        </button>
+
+        <button id="changeStatus">
+
+            Change Status
+
+        </button>
+
+        <button id="exportSelected">
+
+            Export Selected
+
+        </button>
+
+        <button id="deleteSelected">
+
+            Delete Selected
+
+        </button>
+
+    </section>
+
+
+
+    <!-- ================= TABLE ================= -->
+
+    <section class="table-container">
+
+        <table id="donationTable">
+
+            <thead>
+
+            <tr>
+
+                <th>
+
+                    <input
+                        type="checkbox"
+                        id="selectAll">
+
+                </th>
+
+                <th>#</th>
+
+                <th>Reference</th>
+
+                <th>Name</th>
+
+                <th>Mobile</th>
+
+                <th>Amount</th>
+
+                <th>Campaign</th>
+
+                <th>Status</th>
+
+                <th>Date</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+            </thead>
+
+            <tbody id="tableBody">
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+
+
+    <!-- ================= PAGINATION ================= -->
+
+    <section class="pagination">
+
+        <button id="prevPage">
+
+            Previous
+
+        </button>
+
+        <span id="pageNumber">
+
+            1
+
+        </span>
+
+        <button id="nextPage">
+
+            Next
+
+        </button>
+
+        <select id="rowsPerPage">
+
+            <option>25</option>
+
+            <option>50</option>
+
+            <option>100</option>
+
+        </select>
+
+    </section>
+
+
+
+    <!-- ================= DRAWER ================= -->
+
+    <aside id="drawer">
+
+        <div class="drawer-header">
+
+            <h3>
+
+                Donation Details
+
+            </h3>
+
+            <button id="closeDrawer">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div id="drawerContent">
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= LOADER ================= -->
+
+    <div id="loading">
+
+        Loading...
+
+    </div>
+
+
+
+    <!-- ================= TOAST ================= -->
+
+    <div id="toast">
+
+    </div>
+
+
+
 </div>
 
-<div class="toolbar">
-<input id=search placeholder="Search Ref/Name/Mobile">
-<select id=status><option value="">All Status</option><option>Initiated</option><option>Payment Submitted</option><option>Verified</option></select>
-<input id=campaign placeholder="Campaign">
-<input type=date id=from><input type=date id=to>
-<select id=rows><option>25</option><option>50</option><option>100</option></select>
-<button onclick="exportCSV()">CSV</button>
-<button onclick="window.print()">Print</button>
-</div>
+<script type="module" src="admin.js"></script>
 
-<div class="bulk">
-<button onclick="bulkStatus('Verified')">Verify Selected</button>
-<button onclick="bulkExport()">Export Selected</button>
-<button onclick="bulkStatus('Initiated')">Reset Status</button>
-</div>
-
-<table>
-<thead><tr>
-<th></th><th data=s>Ref</th><th data=s>Name</th><th data=s>Mobile</th><th data=s>Amount</th><th data=s>Campaign</th><th data=s>Status</th><th data=s>Date</th>
-</tr></thead>
-<tbody id=tb></tbody>
-</table>
-<div id=details></div><div class=toast id=toast></div>
-
-<script type="module">
-import {db,collection,getDocs,query,orderBy,doc,updateDoc} from "./firebase.js";
-let data=[],sortKey="createdAt",asc=false;
-const tb=tb=document.getElementById("tb");
-const toast=t=>{let x=document.getElementById("toast");x.textContent=t;x.style.display="block";setTimeout(()=>x.style.display="none",1800);}
-async function load(){
- const snap=await getDocs(query(collection(db,"donations"),orderBy("createdAt","desc")));
- data=snap.docs.map(d=>({id:d.id,...d.data()}));
- calc(); render(); last.textContent=new Date().toLocaleTimeString();
-}
-function calc(){
- tDon.textContent=data.length;
- tAmt.textContent="₹"+data.reduce((a,b)=>a+(+b.amount||0),0);
- tPend.textContent=data.filter(x=>x.status!="Verified").length;
- tVer.textContent=data.filter(x=>x.status=="Verified").length;
- let n=new Date(),td=0,tm=0;
- data.forEach(x=>{let d=x.createdAt?.seconds?new Date(x.createdAt.seconds*1000):null;if(!d)return;
- if(d.toDateString()==n.toDateString())td+=+x.amount||0;
- if(d.getMonth()==n.getMonth()&&d.getFullYear()==n.getFullYear())tm+=+x.amount||0;});
- tToday.textContent="₹"+td;tMonth.textContent="₹"+tm;
-}
-function render(){
- let r=[...data];
- let q=search.value.toLowerCase();
- r=r.filter(x=>(!q||`${x.donationRef} ${x.name} ${x.mobile}`.toLowerCase().includes(q))&&(!status.value||x.status==status.value)&&(!campaign.value||x.campaign==campaign.value));
- r.sort((a,b)=>String(a[sortKey]||"").localeCompare(String(b[sortKey]||""))*(asc?1:-1));
- r=r.slice(0,+rows.value);
- tb.innerHTML="";
- r.forEach(x=>{
- let tr=document.createElement("tr");
- tr.innerHTML=`<td><input type=checkbox class=sel value="${x.id}"></td>
- <td>${x.donationRef||""}</td><td>${x.name||""}</td><td>${x.mobile||""}</td>
- <td>${x.amount||0}</td><td>${x.campaign||""}</td><td>${x.status||""}</td>
- <td>${x.createdAt?.seconds?new Date(x.createdAt.seconds*1000).toLocaleString():""}</td>`;
- tr.onclick=e=>{if(e.target.type=="checkbox")return;details.style.display="block";details.innerHTML=`<h3>${x.name}</h3>
- <p>${x.mobile}</p><p>${x.donationRef}</p><p>${x.status}</p>
- <button onclick="verify('${x.id}')">Verify</button>`;}
- tb.appendChild(tr);
- });
-}
-window.verify=async id=>{if(!confirm("Verify donation?"))return;await updateDoc(doc(db,"donations",id),{status:"Verified"});toast("Verified");load();}
-window.bulkStatus=async st=>{let ids=[...document.querySelectorAll(".sel:checked")].map(x=>x.value);if(!ids.length)return;
- if(!confirm("Apply to selected?"))return;
- for(let id of ids)await updateDoc(doc(db,"donations",id),{status:st});toast("Updated");load();}
-window.exportCSV=()=>{let csv="Ref,Name,Mobile,Amount,Campaign,Status\n"+data.map(x=>[x.donationRef,x.name,x.mobile,x.amount,x.campaign,x.status].join(",")).join("\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv]));a.download="donations.csv";a.click();}
-window.bulkExport=exportCSV;
-[search,status,campaign,rows].forEach(x=>x.oninput=render);
-document.querySelectorAll("th[data-s]").forEach(h=>h.onclick=()=>{sortKey={Ref:"donationRef"}[h.textContent]||h.textContent.toLowerCase();asc=!asc;render();});
-refresh.onclick=load;
-setInterval(load,30000);
-load();
-</script>
 </body></html>
