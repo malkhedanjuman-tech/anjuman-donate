@@ -22,7 +22,8 @@ form.addEventListener("submit", async (e) => {
 
     try {
 
-        await addDoc(collection(db, "donations"), {
+        const docRef = await addDoc(collection(db, "donations"), {
+
             donationRef,
             name,
             mobile,
@@ -30,10 +31,11 @@ form.addEventListener("submit", async (e) => {
             campaign,
             status: "Initiated",
             createdAt: serverTimestamp()
+
         });
 
         window.location.href =
-            `payment.html?ref=${encodeURIComponent(donationRef)}&amount=${encodeURIComponent(amount)}&campaign=${encodeURIComponent(campaign)}`;
+            `payment.html?id=${encodeURIComponent(docRef.id)}&ref=${encodeURIComponent(donationRef)}&amount=${encodeURIComponent(amount)}&campaign=${encodeURIComponent(campaign)}`;
 
     } catch (err) {
 
