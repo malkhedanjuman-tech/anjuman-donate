@@ -1,189 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Your Donation</title>
-
-    <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-            font-family:Arial,sans-serif;
-        }
-
-        body{
-            background:#f5f5f5;
-            padding:20px;
-        }
-
-        .card{
-            max-width:500px;
-            margin:auto;
-            background:#fff;
-            padding:25px;
-            border-radius:12px;
-            box-shadow:0 5px 15px rgba(0,0,0,.1);
-        }
-
-        h2{
-            text-align:center;
-            margin-bottom:20px;
-        }
-
-        .success{
-            color:green;
-            text-align:center;
-            font-weight:bold;
-            margin-bottom:20px;
-        }
-
-        .row{
-            margin-bottom:15px;
-        }
-
-        .label{
-            font-size:14px;
-            color:#666;
-        }
-
-        .value{
-            font-size:18px;
-            font-weight:bold;
-            margin-top:4px;
-            word-break:break-word;
-        }
-
-        .copyBtn{
-            width:100%;
-            margin-top:8px;
-            padding:10px;
-            border:none;
-            background:#0066cc;
-            color:#fff;
-            border-radius:6px;
-            cursor:pointer;
-        }
-
-        .qr{
-            text-align:center;
-            margin:25px 0;
-        }
-
-        .qr img{
-            width:220px;
-            max-width:100%;
-        }
-
-        .finishBtn{
-            width:100%;
-            padding:12px;
-            background:green;
-            color:white;
-            border:none;
-            border-radius:6px;
-            cursor:pointer;
-            font-size:16px;
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Complete Payment</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px}
+.card{max-width:520px;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+h2{text-align:center}
+.row{margin:16px 0}
+.label{color:#666;font-size:13px}
+.value{font-weight:bold;font-size:18px;margin-top:4px}
+button{width:100%;padding:12px;border:none;border-radius:8px;margin-top:8px;cursor:pointer}
+.primary{background:#0b57d0;color:#fff}
+.success{background:#198754;color:#fff}
+img{display:block;margin:20px auto;width:220px;max-width:100%}
+</style>
 </head>
-
 <body>
-
 <div class="card">
+<h2>Complete Your Donation</h2>
 
-    <h2>Donation Successful</h2>
+<div class="row"><div class="label">Reference</div><div class="value" id="ref"></div></div>
+<div class="row"><div class="label">Amount</div><div class="value" id="amount"></div></div>
+<div class="row"><div class="label">Campaign</div><div class="value" id="campaign"></div></div>
 
-    <p class="success">
-        Your donation request has been registered.
-    </p>
+<button class="primary" id="upiBtn">Open UPI App</button>
 
-    <div class="row">
-        <div class="label">Donation Reference</div>
-        <div class="value" id="ref"></div>
-    </div>
+<img id="qr">
 
-    <div class="row">
-        <div class="label">Amount</div>
-        <div class="value" id="amount"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">Campaign</div>
-        <div class="value" id="campaign"></div>
-    </div>
-
-    <div class="row">
-        <div class="label">Registered Mobile Number</div>
-        <div class="value" id="mobile">8099813634</div>
-
-        <button class="copyBtn" onclick="copyMobile()">
-            Copy Mobile Number
-        </button>
-    </div>
-
-    <div class="row">
-        <div class="label">UPI ID</div>
-        <div class="value" id="upi">
-            makbarali.005@oksbi
-        </div>
-
-        <button class="copyBtn" onclick="copyUPI()">
-            Copy UPI ID
-        </button>
-    </div>
-
-    <div class="qr">
-
-        <img
-            id="qrImage"
-            src=""
-            alt="QR Code">
-
-    </div>
-
-    <button class="finishBtn">
-        I Have Completed Payment
-    </button>
-
+<div class="row">
+<div class="label">Mobile</div>
+<div class="value">8099813634</div>
+<button onclick="copyText('8099813634')">Copy Mobile Number</button>
 </div>
 
-<script>
+<div class="row">
+<div class="label">UPI ID</div>
+<div class="value">makbarali.005@oksbi</div>
+<button onclick="copyText('makbarali.005@oksbi')">Copy UPI ID</button>
+</div>
 
-const params=new URLSearchParams(window.location.search);
+<button class="success" id="doneBtn">I Have Completed Payment</button>
+</div>
 
-const ref=params.get("ref");
-const amount=params.get("amount");
-const campaign=params.get("campaign");
+<script type="module">
+import {db,doc,updateDoc} from "./firebase.js";
+
+const q=new URLSearchParams(location.search);
+const id=q.get("id");
+const ref=q.get("ref");
+const amount=q.get("amount");
+const campaign=q.get("campaign");
 
 document.getElementById("ref").textContent=ref;
 document.getElementById("amount").textContent="₹ "+amount;
 document.getElementById("campaign").textContent=campaign;
 
-const upiString=`upi://pay?pa=makbarali.005@oksbi&pn=Anjuman&am=${amount}&cu=INR&tn=${campaign}|Ref:${ref}`;
+const upi=`upi://pay?pa=makbarali.005@oksbi&pn=Anjuman&am=${amount}&cu=INR&tn=${campaign}|Ref:${ref}`;
 
-document.getElementById("qrImage").src=
-`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(upiString)}`;
+document.getElementById("qr").src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data="+encodeURIComponent(upi);
 
-function copyMobile(){
+document.getElementById("upiBtn").onclick=()=>{location.href=upi;};
 
-navigator.clipboard.writeText("8099813634");
+window.copyText=async(t)=>{
+ await navigator.clipboard.writeText(t);
+ alert("Copied");
+};
 
-alert("Mobile number copied.");
-
-}
-
-function copyUPI(){
-
-navigator.clipboard.writeText("makbarali.005@oksbi");
-
-alert("UPI ID copied.");
-
-}
-
+document.getElementById("doneBtn").onclick=async()=>{
+ try{
+   await updateDoc(doc(db,"donations",id),{
+     status:"Payment Submitted"
+   });
+   alert("Thank you! Payment marked as submitted.");
+   location.href="index.html";
+ }catch(e){
+   console.error(e);
+   alert("Unable to update payment status.");
+ }
+};
 </script>
-
 </body>
 </html>
