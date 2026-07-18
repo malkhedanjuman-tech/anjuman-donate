@@ -1,3 +1,4 @@
+```javascript
 // Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
 
@@ -7,7 +8,10 @@ import {
   addDoc,
   serverTimestamp,
   doc,
-  updateDoc
+  updateDoc,
+  getDocs,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -28,5 +32,9 @@ export {
   addDoc,
   serverTimestamp,
   doc,
-  updateDoc
+  updateDoc,
+  getDocs,
+  query,
+  orderBy
 };
+```
